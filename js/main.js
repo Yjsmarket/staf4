@@ -218,6 +218,4 @@ var CONFIG = {
   document.querySelectorAll('[data-tel]').forEach(function (a) { a.href = 'tel:' + CONFIG.TEL; });
   document.querySelectorAll('[data-mail]').forEach(function (a) { a.href = 'mailto:' + CONFIG.EMAIL; });
 
-  /* --- Jaartal footer --------------------------------------------------- */
-  var y = document.getElementById('year'); if (y) y.textContent = new Date().getFullYear();
 })();
