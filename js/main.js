@@ -4,9 +4,7 @@
 
 /* --- Config: pas deze twee waarden aan met de echte gegevens ------------- */
 var CONFIG = {
-  WHATSAPP: '31600000000',        // [WHATSAPP-NUMMER] zonder + of spaties, bv. 31612345678
-  TEL: '+31600000000',            // [TELEFOONNUMMER]
-  EMAIL: 'info@staff-foryou.nl'
+  EMAIL: 'info@staff-foryou.nl'   // [E-MAILADRES]
 };
 
 (function () {
@@ -40,20 +38,31 @@ var CONFIG = {
     revEls.forEach(function (el) { ro.observe(el); });
   } else { revEls.forEach(function (el) { el.classList.add('in'); }); }
 
-  /* --- Hoe het werkt: lijn + stappen laten oplichten ------------------- */
+  /* --- Werkwijze: stappen na elkaar laten oplichten + gloeilijn vullen -- */
+  var stepsWrap = document.querySelector('.steps-wrap');
   var steps = document.querySelectorAll('.step');
-  var lineEl = document.querySelector('.steps-line');
-  if ('IntersectionObserver' in window && steps.length) {
-    var so = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) {
-        if (e.isIntersecting) {
-          e.target.classList.add('lit');
-          if (lineEl) lineEl.classList.add('fill');
-        }
-      });
-    }, { threshold: 0.4 });
-    steps.forEach(function (s) { so.observe(s); });
-  } else { steps.forEach(function (s) { s.classList.add('lit'); }); if (lineEl) lineEl.classList.add('fill'); }
+  var lineFill = document.querySelector('.steps-line-fill');
+  var stepsDone = false;
+  function litStep(i) {
+    if (i >= steps.length) return;
+    steps[i].classList.add('lit');
+    if (lineFill && steps.length > 1) lineFill.style.transform = 'scaleX(' + (i / (steps.length - 1)) + ')';
+  }
+  function runSteps() {
+    if (stepsDone) return;
+    stepsDone = true;
+    steps.forEach(function (s, i) { setTimeout(function () { litStep(i); }, i * 480); });
+  }
+  function checkSteps() {
+    if (stepsDone || !stepsWrap) return;
+    var r = stepsWrap.getBoundingClientRect();
+    if (r.top < window.innerHeight * 0.82 && r.bottom > 0) runSteps();
+  }
+  if (stepsWrap) {
+    window.addEventListener('scroll', checkSteps, { passive: true });
+    window.addEventListener('resize', checkSteps);
+    checkSteps();
+  }
 
   /* --- Swipe-track pijlen ---------------------------------------------- */
   document.querySelectorAll('[data-track]').forEach(function (block) {
@@ -156,22 +165,25 @@ var CONFIG = {
       var opts = [];
       W.querySelectorAll('[data-panel="2"] .opt.sel input').forEach(function (i) { opts.push(i.dataset.label || i.value); });
 
-      var msg =
-        '*Nieuwe personeelsaanvraag - Staff4You*%0A%0A' +
-        '*Sector:* ' + enc(val('sector')) + '%0A' +
-        '*Aantal krachten:* ' + enc(val('aantal')) + '%0A' +
-        '*Startdatum:* ' + enc(val('startdatum')) + '%0A' +
-        '*Periode:* ' + enc(val('periode')) + '%0A%0A' +
-        '*Bedrijf:* ' + enc(val('bedrijf')) + '%0A' +
-        '*Contactpersoon:* ' + enc(val('contact')) + '%0A' +
-        '*Telefoon/e-mail:* ' + enc(val('contactinfo')) + '%0A' +
-        (opts.length ? '*Wensen:* ' + enc(opts.join(', ')) + '%0A' : '') +
-        (val('opmerkingen') ? '%0A*Opmerkingen:* ' + enc(val('opmerkingen')) : '');
+      var lines = [
+        'Nieuwe personeelsaanvraag - Staff4You', '',
+        'Sector: ' + val('sector'),
+        'Aantal krachten: ' + val('aantal'),
+        'Startdatum: ' + val('startdatum'),
+        'Periode: ' + val('periode'), '',
+        'Bedrijf: ' + val('bedrijf'),
+        'Contactpersoon: ' + val('contact'),
+        'Contact: ' + val('contactinfo')
+      ];
+      if (opts.length) lines.push('Wensen: ' + opts.join(', '));
+      if (val('opmerkingen')) { lines.push(''); lines.push('Opmerkingen: ' + val('opmerkingen')); }
 
-      window.open('https://wa.me/' + CONFIG.WHATSAPP + '?text=' + msg, '_blank');
+      var subject = 'Personeelsaanvraag - ' + (val('sector') || 'Staff4You');
+      window.location.href = 'mailto:' + CONFIG.EMAIL +
+        '?subject=' + encodeURIComponent(subject) +
+        '&body=' + encodeURIComponent(lines.join('
+'));
     });
-
-    function enc(s) { return encodeURIComponent(s).replace(/%20/g, ' '); }
   }
 
   /* --- Prefill vanuit knoppen elders ----------------------------------- */
@@ -210,12 +222,10 @@ var CONFIG = {
     });
   }
 
-  /* --- Set WhatsApp / tel links overal -------------------------------- */
-  document.querySelectorAll('[data-wa]').forEach(function (a) {
-    var text = a.dataset.wa || 'Hoi Staff4You, ik heb een vraag.';
-    a.href = 'https://wa.me/' + CONFIG.WHATSAPP + '?text=' + encodeURIComponent(text);
+  /* --- Mail links (met optioneel onderwerp) ---------------------------- */
+  document.querySelectorAll('[data-mail]').forEach(function (a) {
+    var subj = a.getAttribute('data-subject');
+    a.href = 'mailto:' + CONFIG.EMAIL + (subj ? '?subject=' + encodeURIComponent(subj) : '');
   });
-  document.querySelectorAll('[data-tel]').forEach(function (a) { a.href = 'tel:' + CONFIG.TEL; });
-  document.querySelectorAll('[data-mail]').forEach(function (a) { a.href = 'mailto:' + CONFIG.EMAIL; });
 
 })();
