@@ -181,8 +181,7 @@ var CONFIG = {
       var subject = 'Personeelsaanvraag - ' + (val('sector') || 'Staff4You');
       window.location.href = 'mailto:' + CONFIG.EMAIL +
         '?subject=' + encodeURIComponent(subject) +
-        '&body=' + encodeURIComponent(lines.join('
-'));
+        '&body=' + encodeURIComponent(lines.join('\n'));
     });
   }
 
