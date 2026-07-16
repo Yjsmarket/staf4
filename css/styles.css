@@ -109,7 +109,7 @@ section{position:relative}
 /* ---- Hero ------------------------------------------------------------- */
 .hero{position:relative;padding-top:130px;color:#fff;overflow:hidden;background:var(--dark)}
 .hero-bg{position:absolute;inset:0;background:linear-gradient(120deg,var(--dark) 0%,var(--dark-2) 100%);z-index:0}
-.hero-bg::before{content:"";position:absolute;inset:0;background-image:url('../img/hero-team.jpg');background-size:cover;background-position:center;opacity:.28;mix-blend-mode:luminosity}
+.hero-bg::before{content:"";position:absolute;inset:0;background-image:url('../img/hero-team.jpg');background-size:cover;background-position:center top;opacity:.28;mix-blend-mode:luminosity;-webkit-mask-image:linear-gradient(to bottom,#000 0%,#000 42%,transparent 80%);mask-image:linear-gradient(to bottom,#000 0%,#000 42%,transparent 80%)}
 .hero-bg::after{content:"";position:absolute;inset:0;background:radial-gradient(120% 80% at 80% 0%,rgba(46,125,209,.25),transparent 60%)}
 .hero .wrap{position:relative;z-index:2}
 .hero-grid{display:grid;gap:38px;align-items:center;padding-bottom:40px}
@@ -159,7 +159,9 @@ section{position:relative}
 
 /* ---- Feiten-balk ------------------------------------------------------ */
 .facts{background:var(--dark-2);border-top:1px solid rgba(255,255,255,.07)}
-.facts .wrap{display:grid;grid-template-columns:1fr 1fr;gap:26px 20px;padding-top:34px;padding-bottom:34px}
+.facts .wrap{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding-top:30px;padding-bottom:30px}
+.fact{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:18px 16px;transition:.2s}
+.fact:hover{border-color:rgba(214,192,138,.4)}
 .fact .fnum{font-family:var(--f-head);font-weight:700;font-size:2.1rem;color:var(--champ);line-height:1;margin-bottom:.35em}
 .fact p{color:#a9bacb;font-size:.92rem;margin:0;line-height:1.4}
 
